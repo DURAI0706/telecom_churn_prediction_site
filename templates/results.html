@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Results</title>
+    <style>
+        body {
+            background: linear-gradient(45deg, #206291, #206291);
+            height: 100vh;
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        form {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 90%; /* Adjust as needed */
+            max-width: 800px; /* Optional: limit maximum width */
+            margin: auto; /* Center the form */
+        }
+
+        form h1 {
+            color: #fff;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        form p {
+            font-weight: 500;
+            font-size: 1.2rem;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Adjust as needed */
+            gap: 20px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .grid-item {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .grid-item strong {
+            color: #dba334; /* Color for feature_descriptions */
+        }
+
+        .grid-item span {
+            color: #ffffff; /* Color for value */
+        }
+
+        .churned {
+            font-weight: bold;
+            color: red;
+        }
+
+        .not-churned {
+            font-weight: bold;
+            color: green;
+        }
+
+        form input[type="button"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+
+        form input[type="button"]:hover {
+            background-color: #2980b9;
+        }
+
+        ::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus,
+        button:focus {
+            outline: none;
+        }
+
+    </style>
+</head>
+<body>
+    <form>
+        <h1>Prediction Results</h1>
+        <p><strong>Predicted:</strong>
+            {% if results['Predicted'] == 0 %}
+                <span class="churned">Churned</span>
+            {% elif results['Predicted'] == 1 %}
+                <span class="not-churned">Not Churned</span>
+            {% endif %}
+        </p>
+        <!-- Display other result details -->
+        {% for key, value in results.items() if key != 'Predicted' and not key.startswith('Probability_Class_') %}
+            <p><strong>{{ feature_descriptions[key] }}:</strong> <span>{{ value }}</span></p>
+        {% endfor %}
+        <h2>Form Data:</h2>
+        <div class="grid-container">
+            {% for key, value in form_data.items() %}
+                <div class="grid-item"><strong>{{ feature_descriptions[key] }}:</strong> <span>{{ value }}</span></div>
+            {% endfor %}
+        </div>
+        <input type="button" value="Back to Form" onclick="window.location.href='/'">
+    </form>
+</body>
+</html>
