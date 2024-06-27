@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Churn Prediction</title>
+    <style>
+        /* Define your custom colors and gradients */
+        :root {
+            --white: rgba(255, 255, 255, 0.3);
+            --primary-color: #007BFF;
+            --secondary-color: #0056b3;
+            --background-gradient: linear-gradient(45deg, #317792, #3F5EFB);
+        }
+
+        /* Global styles */
+        body {
+            background: var(--background-gradient);
+            height: 100vh;
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            position: relative; /* Ensure positioning context for absolute elements */
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            top: 20px; /* Adjust this value to position vertically */
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* Form styles */
+        form {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            display: grid;
+            grid-gap: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 20px 20px 40px -6px rgba(0, 0, 0, 0.2);
+            position: relative; /* Ensure absolute elements within are positioned relative to this */
+        }
+
+        label {
+            font-size: 1em;
+            color: #fff;
+            display: flex; /* Use flexbox for label and info button alignment */
+            align-items: center;
+            transition: color 0.3s;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-button {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            margin-left: 5px;
+            font-size: 1em;
+        }
+
+        select, input[type="number"] {
+            background: transparent;
+            width: 80%;
+            padding: 10px;
+            border: none;
+            border-left: 1px solid var(--white);
+            border-top: 1px solid var(--white);
+            border-radius: 5px;
+            backdrop-filter: blur(5px);
+            box-shadow: 4px 4px 60px rgba(0, 0, 0, 0.2);
+            color: #0e5faa;
+            font-family: Montserrat, sans-serif;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .button-container {
+            grid-column: span 3; /* Span across 3 columns */
+            display: flex;
+            justify-content: center; /* Center horizontally */
+            margin-top: 2em; /* Adjust vertical spacing */
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-left: 5px solid var(--white);
+            border-top: 5px solid var(--white);
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(1);
+        }
+
+        /* Additional decorative elements */
+        .drop {
+            background: var(--white);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            border-left: 1px solid var(--white);
+            border-top: 1px solid var(--white);
+            box-shadow: 10px 10px 60px -8px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            transition: all 0.2s ease;
+        }
+
+        .drop-1 {
+            height: 80px;
+            width: 80px;
+            top: -20px;
+            left: -40px;
+            z-index: -1;
+        }
+
+        .drop-2 {
+            height: 80px;
+            width: 80px;
+            bottom: -30px;
+            right: -10px;
+        }
+
+        .drop-3 {
+            height: 100px;
+            width: 100px;
+            bottom: 120px;
+            right: -50px;
+            z-index: -1;
+        }
+
+        .drop-4 {
+            height: 120px;
+            width: 120px;
+            top: -60px;
+            right: -60px;
+        }
+
+        .drop-5 {
+            height: 60px;
+            width: 60px;
+            bottom: 170px;
+            left: 90px;
+            z-index: -1;
+        }
+
+        /* Remove focus outlines for cleaner appearance */
+        a, input:focus, select:focus, textarea:focus, button:focus {
+            outline: none;
+        }
+
+        /* Info tooltip styles */
+        .info-tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 300px;
+            z-index: 100;
+            display: none;
+        }
+
+        .info-tooltip.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Churn Prediction Form</h1>
+    <form id="churnForm" action="/predict" method="post">
+        <!-- Page 1 -->
+        <div id="page1" style="display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 20px;">
+            <!-- Dropdowns -->
+            {% for feature, options in dropdown_mappings.items() %}
+                {% if feature in feature_descriptions %}
+                    <div>
+                        <label for="{{ feature }}">{{ feature }}
+                            <button type="button" class="info-button" onclick="toggleInfo('{{ feature }}')">ℹ️</button>
+                        </label>
+                        <select name="{{ feature }}" id="{{ feature }}" required>
+                            <option value="" disabled selected>Select</option>
+                            {% for option, value in options.items() %}
+                                <option value="{{ option }}">{{ option }}</option>
+                            {% endfor %}
+                        </select>
+                        <div id="{{ feature }}Info" class="info-tooltip">
+                            {{ feature_descriptions[feature] }}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <div class="button-container">
+                <button type="button" onclick="validateAndShowPage(2)">Next</button>
+            </div>
+        </div>
+
+        <!-- Page 2 -->
+        <div id="page2" style="display: none; grid-template-columns: repeat(3, 1fr); grid-gap: 20px;">
+            <!-- Inputs -->
+            <div>
+                <label for="total_children_0_U">total_children_0_U
+                    <button type="button" class="info-button" onclick="toggleInfo('total_children_0_U')">ℹ️</button>
+                </label>
+                <input type="number" id="total_children_0_U" name="total_children_0_U" min="0" max="5" required>
+                <div id="total_children_0_UInfo" class="info-tooltip">
+                    'total_children_0_U':'total children'
+                </div>
+            </div>
+            
+            {% for feature in ['months', 'uniqsubs', 'actvsubs', 'totcalls', 'totmou', 'totrev', 'avgrev', 'avgmou', 'avgqty', 'eqpdays', 'total_truck'] %}
+                <div>
+                    <label for="{{ feature }}">{{ feature }}
+                        <button type="button" class="info-button" onclick="toggleInfo('{{ feature }}')">ℹ️</button>
+                    </label>
+                    <input type="number" id="{{ feature }}" name="{{ feature }}" step="any" required>
+                    <div id="{{ feature }}Info" class="info-tooltip">
+                        {{ feature_descriptions[feature] }}
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div class="button-container">
+                <button type="button" onclick="showPage(1)">Back</button>
+                <button type="submit">Submit</button>
+            </div>
+        </div>
+    </form>
+    
+    <!-- Script for page switching and validation -->
+    <script>
+        function showPage(pageNumber) {
+            const page1 = document.getElementById('page1');
+            const page2 = document.getElementById('page2');
+            if (pageNumber === 1) {
+                page1.style.display = 'grid';
+                page2.style.display = 'none';
+            } else {
+                page1.style.display = 'none';
+                page2.style.display = 'grid';
+            }
+        }
+
+        function validateAndShowPage(pageNumber) {
+            const dropdowns = document.querySelectorAll('#page1 select');
+            let allSelected = true;
+            dropdowns.forEach(dropdown => {
+                if (dropdown.value === "") {
+                    allSelected = false;
+                    alert(`Please select a value for ${dropdown.name}`);
+                }
+            });
+
+            if (allSelected) {
+                showPage(pageNumber);
+            }
+        }
+
+        function toggleInfo(feature) {
+            const infoTooltip = document.getElementById(`${feature}Info`);
+            infoTooltip.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
