@@ -72,7 +72,7 @@
 
         select, input[type="number"] {
             background: transparent;
-            width: 100%;
+            width: 80%;
             padding: 10px;
             border: none;
             border-left: 1px solid var(--white);
@@ -148,62 +148,6 @@
         .info-tooltip.active {
             display: block;
         }
-
-        /* Responsive styles */
-        @media (max-width: 1024px) {
-            form {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            form {
-                padding: 15px;
-                grid-template-columns: 1fr;
-            }
-
-            h1 {
-                font-size: 2em;
-            }
-
-            .button-container {
-                grid-column: span 1; /* Span across 1 column */
-                margin-top: 1.5em; /* Adjust vertical spacing */
-            }
-
-            select, input[type="number"] {
-                font-size: 0.9em;
-            }
-
-            button {
-                font-size: 0.9em;
-                padding: 8px 16px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.8em;
-                top: 10px; /* Adjust vertical position */
-            }
-
-            form {
-                padding: 10px;
-            }
-
-            label {
-                font-size: 0.9em;
-            }
-
-            select, input[type="number"] {
-                font-size: 0.8em;
-            }
-
-            button {
-                font-size: 0.8em;
-                padding: 6px 12px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -244,44 +188,81 @@
                 </label>
                 <input type="number" id="total_children_0_U" name="total_children_0_U" min="0" max="5" required>
                 <div id="total_children_0_UInfo" class="info-tooltip">
-                    'total children (Range: 0-5)'
+                    'total_children_0_U':'total children (Range: 0-5)'
                 </div>
             </div>
             
-            {% for feature, min_val, max_val in [('months', 6, 61), ('uniqsubs', 1, 196), ('actvsubs', 0, 53), ('totcalls', 0, 50636), ('totmou', 0.0, 106760.3067), ('totrev', 3.65, 14231.32), ('avgrev', 0.48, 709.97), ('avg6mou', 0.0, 18717.5), ('avg6qty', 0.0, 11926.6667), ('avg6rev', 0.48, 709.97)] %}
-            <div>
-                <label for="{{ feature }}">{{ feature }}
-                    <button type="button" class="info-button" onclick="toggleInfo('{{ feature }}')">ℹ️</button>
-                </label>
-                <input type="number" id="{{ feature }}" name="{{ feature }}" min="{{ min_val }}" max="{{ max_val }}" required>
-                <div id="{{ feature }}Info" class="info-tooltip">
-                    '{{ feature }} (Range: {{ min_val }} - {{ max_val }})'
+            {% for feature, min_val, max_val in [('months', 6, 61), ('uniqsubs', 1, 196), ('actvsubs', 0, 53), ('totcalls', 0, 50636), ('totmou', 0.0, 106760.3067), ('totrev', 3.65, 14231.32), ('avgrev', 0.48, 709.97), ('avgmou', 0.0, 2900.82), ('avgqty', 0.0, 1488.16), ('eqpdays', -5.0, 1823.0), ('total_truck', 0.0, 2.0)] %}
+                <div>
+                    <label for="{{ feature }}">{{ feature }}
+                        <button type="button" class="info-button" onclick="toggleInfo('{{ feature }}')">ℹ️</button>
+                    </label>
+                    <input type="number" id="{{ feature }}" name="{{ feature }}" min="{{ min_val }}" max="{{ max_val }}" step="any" required>
+                    <div id="{{ feature }}Info" class="info-tooltip">
+                        {{ feature_descriptions[feature] }} (Range: {{ min_val }}-{{ max_val }})
+                    </div>
                 </div>
-            </div>
             {% endfor %}
             <div class="button-container">
-                <button type="button" onclick="showPage(1)">Previous</button>
-                <button type="submit">Submit</button>
+                <button type="button" onclick="validatePage2()">Submit</button>
             </div>
         </div>
     </form>
+    
+    <!-- Script for page switching and validation -->
     <script>
-        // JavaScript functions for page navigation and info tooltips
         function showPage(pageNumber) {
-            document.getElementById('page1').style.display = pageNumber === 1 ? 'grid' : 'none';
-            document.getElementById('page2').style.display = pageNumber === 2 ? 'grid' : 'none';
-            document.getElementById('formHeading').style.top = pageNumber === 2 ? '0px' : '20px';
+            const page1 = document.getElementById('page1');
+            const page2 = document.getElementById('page2');
+            const heading = document.getElementById('formHeading');
+
+            if (pageNumber === 1) {
+                page1.style.display = 'grid';
+                page2.style.display = 'none';
+                heading.style.top = '20px'; // Adjust heading position for page 1
+            } else {
+                page1.style.display = 'none';
+                page2.style.display = 'grid';
+                heading.style.top = '60px'; // Adjust heading position for page 2
+            }
         }
 
         function validateAndShowPage(pageNumber) {
-            // Implement your validation logic here
-            // If valid, call showPage(pageNumber)
-            showPage(pageNumber);
+            const dropdowns = document.querySelectorAll('#page1 select');
+            let allSelected = true;
+            dropdowns.forEach(dropdown => {
+                if (dropdown.value === "") {
+                    allSelected = false;
+                    alert(`Please select a value for ${dropdown.name}`);
+                }
+            });
+
+            if (allSelected) {
+                showPage(pageNumber);
+            }
         }
 
         function toggleInfo(feature) {
-            var infoTooltip = document.getElementById(feature + 'Info');
+            const infoTooltip = document.getElementById(`${feature}Info`);
             infoTooltip.classList.toggle('active');
+        }
+
+        function validatePage2() {
+            const inputs = document.querySelectorAll('#page2 input[type="number"]');
+            let allValid = true;
+            inputs.forEach(input => {
+                const min = parseFloat(input.min);
+                const max = parseFloat(input.max);
+                const value = parseFloat(input.value);
+                if (value < min || value > max) {
+                    allValid = false;
+                    alert(`Invalid range for ${input.name}: ${value} (Range: ${min}-${max})`);
+                }
+            });
+
+            if (allValid) {
+                document.getElementById('churnForm').submit();
+            }
         }
     </script>
 </body>
