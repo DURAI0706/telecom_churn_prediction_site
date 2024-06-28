@@ -34,6 +34,7 @@
             top: 20px; /* Adjust this value to position vertically */
             left: 50%;
             transform: translateX(-50%);
+            transition: top 0.3s;
         }
 
         /* Form styles */
@@ -71,7 +72,7 @@
 
         select, input[type="number"] {
             background: transparent;
-            width: 80%;
+            width: 100%;
             padding: 10px;
             border: none;
             border-left: 1px solid var(--white);
@@ -127,44 +128,6 @@
             transition: all 0.2s ease;
         }
 
-        .drop-1 {
-            height: 80px;
-            width: 80px;
-            top: -20px;
-            left: -40px;
-            z-index: -1;
-        }
-
-        .drop-2 {
-            height: 80px;
-            width: 80px;
-            bottom: -30px;
-            right: -10px;
-        }
-
-        .drop-3 {
-            height: 100px;
-            width: 100px;
-            bottom: 120px;
-            right: -50px;
-            z-index: -1;
-        }
-
-        .drop-4 {
-            height: 120px;
-            width: 120px;
-            top: -60px;
-            right: -60px;
-        }
-
-        .drop-5 {
-            height: 60px;
-            width: 60px;
-            bottom: 170px;
-            left: 90px;
-            z-index: -1;
-        }
-
         /* Remove focus outlines for cleaner appearance */
         a, input:focus, select:focus, textarea:focus, button:focus {
             outline: none;
@@ -185,10 +148,66 @@
         .info-tooltip.active {
             display: block;
         }
+
+        /* Responsive styles */
+        @media (max-width: 1024px) {
+            form {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            form {
+                padding: 15px;
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .button-container {
+                grid-column: span 1; /* Span across 1 column */
+                margin-top: 1.5em; /* Adjust vertical spacing */
+            }
+
+            select, input[type="number"] {
+                font-size: 0.9em;
+            }
+
+            button {
+                font-size: 0.9em;
+                padding: 8px 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8em;
+                top: 10px; /* Adjust vertical position */
+            }
+
+            form {
+                padding: 10px;
+            }
+
+            label {
+                font-size: 0.9em;
+            }
+
+            select, input[type="number"] {
+                font-size: 0.8em;
+            }
+
+            button {
+                font-size: 0.8em;
+                padding: 6px 12px;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>Churn Prediction Form</h1>
+    <h1 id="formHeading">Churn Prediction Form</h1>
     <form id="churnForm" action="/predict" method="post">
         <!-- Page 1 -->
         <div id="page1" style="display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 20px;">
@@ -225,60 +244,43 @@
                 </label>
                 <input type="number" id="total_children_0_U" name="total_children_0_U" min="0" max="5" required>
                 <div id="total_children_0_UInfo" class="info-tooltip">
-                    'total_children_0_U':'total children'
+                    'total children (Range: 0-5)'
                 </div>
             </div>
             
-            {% for feature in ['months', 'uniqsubs', 'actvsubs', 'totcalls', 'totmou', 'totrev', 'avgrev', 'avgmou', 'avgqty', 'eqpdays', 'total_truck'] %}
-                <div>
-                    <label for="{{ feature }}">{{ feature }}
-                        <button type="button" class="info-button" onclick="toggleInfo('{{ feature }}')">ℹ️</button>
-                    </label>
-                    <input type="number" id="{{ feature }}" name="{{ feature }}" step="any" required>
-                    <div id="{{ feature }}Info" class="info-tooltip">
-                        {{ feature_descriptions[feature] }}
-                    </div>
+            {% for feature, min_val, max_val in [('months', 6, 61), ('uniqsubs', 1, 196), ('actvsubs', 0, 53), ('totcalls', 0, 50636), ('totmou', 0.0, 106760.3067), ('totrev', 3.65, 14231.32), ('avgrev', 0.48, 709.97), ('avg6mou', 0.0, 18717.5), ('avg6qty', 0.0, 11926.6667), ('avg6rev', 0.48, 709.97)] %}
+            <div>
+                <label for="{{ feature }}">{{ feature }}
+                    <button type="button" class="info-button" onclick="toggleInfo('{{ feature }}')">ℹ️</button>
+                </label>
+                <input type="number" id="{{ feature }}" name="{{ feature }}" min="{{ min_val }}" max="{{ max_val }}" required>
+                <div id="{{ feature }}Info" class="info-tooltip">
+                    '{{ feature }} (Range: {{ min_val }} - {{ max_val }})'
                 </div>
+            </div>
             {% endfor %}
-
             <div class="button-container">
-                <button type="button" onclick="showPage(1)">Back</button>
+                <button type="button" onclick="showPage(1)">Previous</button>
                 <button type="submit">Submit</button>
             </div>
         </div>
     </form>
-    
-    <!-- Script for page switching and validation -->
     <script>
+        // JavaScript functions for page navigation and info tooltips
         function showPage(pageNumber) {
-            const page1 = document.getElementById('page1');
-            const page2 = document.getElementById('page2');
-            if (pageNumber === 1) {
-                page1.style.display = 'grid';
-                page2.style.display = 'none';
-            } else {
-                page1.style.display = 'none';
-                page2.style.display = 'grid';
-            }
+            document.getElementById('page1').style.display = pageNumber === 1 ? 'grid' : 'none';
+            document.getElementById('page2').style.display = pageNumber === 2 ? 'grid' : 'none';
+            document.getElementById('formHeading').style.top = pageNumber === 2 ? '0px' : '20px';
         }
 
         function validateAndShowPage(pageNumber) {
-            const dropdowns = document.querySelectorAll('#page1 select');
-            let allSelected = true;
-            dropdowns.forEach(dropdown => {
-                if (dropdown.value === "") {
-                    allSelected = false;
-                    alert(`Please select a value for ${dropdown.name}`);
-                }
-            });
-
-            if (allSelected) {
-                showPage(pageNumber);
-            }
+            // Implement your validation logic here
+            // If valid, call showPage(pageNumber)
+            showPage(pageNumber);
         }
 
         function toggleInfo(feature) {
-            const infoTooltip = document.getElementById(`${feature}Info`);
+            var infoTooltip = document.getElementById(feature + 'Info');
             infoTooltip.classList.toggle('active');
         }
     </script>
