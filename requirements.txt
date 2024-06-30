@@ -3,4 +3,3 @@ joblib
 scikit-learn
 pandas
 xgboost
-gunicorn
