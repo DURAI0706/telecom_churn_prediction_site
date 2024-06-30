@@ -1,0 +1,1 @@
+web: gunicorn churn_prediction.wsgi --log-file -
