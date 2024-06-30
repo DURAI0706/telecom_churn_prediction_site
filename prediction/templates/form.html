@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Churn Prediction Form</title>
+    <style>
+        /* Define your custom colors and gradients */
+        :root {
+            --white: rgba(255, 255, 255, 0.3);
+            --primary-color: #007BFF;
+            --secondary-color: #0056b3;
+            --background-gradient: linear-gradient(45deg, #317792, #3F5EFB);
+        }
+
+        /* Global styles */
+        body {
+            background: var(--background-gradient);
+            height: 100vh;
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(69, 124, 172, 0.3);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        /* Form styles */
+        form {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            display: grid;
+            grid-gap: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 20px 20px 40px -6px rgba(0, 0, 0, 0.2);
+        }
+
+        label {
+            font-size: 1em;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-button {
+            background: none;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            margin-left: 5px;
+            font-size: 1em;
+        }
+
+        select, input[type="number"] {
+            background: transparent;
+            width: 70%;
+            padding: 10px;
+            border: none;
+            border-left: 1px solid var(--white);
+            border-top: 1px solid var(--white);
+            border-radius: 5px;
+            backdrop-filter: blur(5px);
+            box-shadow: 4px 4px 60px rgba(0, 0, 0, 0.2);
+            color: #0e5faa;
+            font-family: Montserrat, sans-serif;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .container {
+            background: transparent;
+            width: 100%;
+            text-align: center;
+        }
+
+        .button-container {
+            grid-column: span 3;
+            display: flex;
+            justify-content: center;
+            margin-top: 2em;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-left: 5px solid var(--white);
+            border-top: 5px solid var(--white);
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(1);
+        }
+
+        /* Additional decorative elements */
+        .drop {
+            background: var(--white);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            border-left: 1px solid var(--white);
+            border-top: 1px solid var(--white);
+            box-shadow: 10px 10px 60px -8px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            transition: all 0.2s ease;
+        }
+
+        .drop-1 {
+            height: 80px;
+            width: 80px;
+            top: -20px;
+            left: -40px;
+            z-index: -1;
+        }
+
+        .drop-2 {
+            height: 80px;
+            width: 80px;
+            bottom: -30px;
+            right: -10px;
+        }
+
+        .drop-3 {
+            height: 100px;
+            width: 100px;
+            bottom: 120px;
+            right: -50px;
+            z-index: -1;
+        }
+
+        .drop-4 {
+            height: 120px;
+            width: 120px;
+            top: -60px;
+            right: -60px;
+        }
+
+        .drop-5 {
+            height: 60px;
+            width: 60px;
+            bottom: 170px;
+            left: 90px;
+            z-index: -1;
+        }
+
+        /* Remove focus outlines for cleaner appearance */
+        a, input:focus, select:focus, textarea:focus, button:focus {
+            outline: none;
+        }
+
+        /* Info tooltip styles */
+        .info-tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 300px;
+            z-index: 100;
+            display: none;
+        }
+
+        .info-tooltip.active {
+            display: block;
+        }
+
+        /* Responsive styles */
+        @media (max-width: 1024px) {
+            form {
+                max-width: 90%;
+                grid-template-columns: 1fr;
+            }
+
+            .button-container {
+                grid-column: span 1;
+                justify-content: space-between;
+            }
+
+            h1 {
+                font-size: 1.5em;
+                padding: 10px;
+                margin: 10px 0;
+            }
+
+            select, input[type="number"], button {
+                padding: 8px;
+                font-size: 0.9em;
+            }
+        }
+
+        @media (max-width: 768px) {
+            form {
+                max-width: 100%;
+                grid-template-columns: 1fr;
+            }
+
+            .button-container {
+                grid-column: span 1;
+                justify-content: space-between;
+            }
+
+            h1 {
+                font-size: 1.2em;
+                padding: 5px;
+                margin: 5px 0;
+            }
+
+            select, input[type="number"], button {
+                padding: 6px;
+                font-size: 0.8em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            form {
+                max-width: 100%;
+                grid-template-columns: 1fr;
+                padding: 10px;
+            }
+
+            .button-container {
+                grid-column: span 1;
+                justify-content: space-between;
+                flex-direction: column;
+            }
+
+            h1 {
+                font-size: 1em;
+                padding: 5px;
+                margin: 5px 0;
+            }
+
+            select, input[type="number"], button {
+                padding: 5px;
+                font-size: 0.7em;
+            }
+
+            .info-button {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% load custom_filters %}
+    <form id="churnForm" action="/predict/" method="post">
+        <div class="container">
+            <h1>Churn Prediction Form</h1>
+        </div>
+        <!-- Page 1 -->
+        <div id="page1" style="display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 20px;">
+            {% csrf_token %}
+            {% for key, value in dropdown_mappings.items %}
+                <div>
+                    <label for="{{ key }}">{{ feature_descriptions|get_item:key }}
+                        <button type="button" class="info-button" onclick="toggleInfo('{{ key }}')">ℹ️</button>
+                    </label>
+                    <select name="{{ key }}" id="{{ key }}" required>
+                        <option value="" disabled selected>Select</option>
+                        {% for subkey, subvalue in value.items %}
+                            <option value="{{ subkey }}">{{ subkey }}</option>
+                        {% endfor %}
+                    </select>
+                    <div id="{{ key }}Info" class="info-tooltip">
+                        {{ feature_descriptions|get_item:key }}
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="button-container">
+                <button type="button" onclick="validateAndShowPage(2)">Next</button>
+            </div>
+        </div>
+        <!-- Page 2 -->
+        <div id="page2" style="display: none; grid-template-columns: repeat(3, 1fr); grid-gap: 20px;">
+            <div>
+                <label for="total_children_0_U">Total children
+                    <button type="button" class="info-button" onclick="toggleInfo('total_children_0_U')">ℹ️</button>
+                </label>
+                <input type="number" name="total_children_0_U" id="total_children_0_U" required>
+                <div id="total_children_0_UInfo" class="info-tooltip">Total number of children in the household</div>
+            </div>
+            <div>
+                <label for="months">Total number of months in service
+                    <button type="button" class="info-button" onclick="toggleInfo('months')">ℹ️</button>
+                </label>
+                <input type="number" name="months" id="months" required>
+                <div id="monthsInfo" class="info-tooltip">Total number of months the customer has been in service</div>
+            </div>
+            <div>
+                <label for="uniqsubs">Number of unique subscribers in the household
+                    <button type="button" class="info-button" onclick="toggleInfo('uniqsubs')">ℹ️</button>
+                </label>
+                <input type="number" name="uniqsubs" id="uniqsubs" required>
+                <div id="uniqsubsInfo" class="info-tooltip">Total number of unique subscribers in the household</div>
+            </div>
+            <div>
+                <label for="actvsubs">Number of active subscribers in household
+                    <button type="button" class="info-button" onclick="toggleInfo('actvsubs')">ℹ️</button>
+                </label>
+                <input type="number" name="actvsubs" id="actvsubs" required>
+                <div id="actvsubsInfo" class="info-tooltip">Total number of active subscribers in the household</div>
+            </div>
+            <div>
+                <label for="totcalls">Total number of calls over the life of the customer
+                    <button type="button" class="info-button" onclick="toggleInfo('totcalls')">ℹ️</button>
+                </label>
+                <input type="number" name="totcalls" id="totcalls" required>
+                <div id="totcallsInfo" class="info-tooltip">Total number of calls made over the life of the customer</div>
+            </div>
+            <div>
+                <label for="totmou">Total minutes of use over the life of the customer
+                    <button type="button" class="info-button" onclick="toggleInfo('totmou')">ℹ️</button>
+                </label>
+                <input type="number" name="totmou" id="totmou" required>
+                <div id="totmouInfo" class="info-tooltip">Total minutes of use over the life of the customer</div>
+            </div>
+            <div>
+                <label for="totrev">Total revenue
+                    <button type="button" class="info-button" onclick="toggleInfo('totrev')">ℹ️</button>
+                </label>
+                <input type="number" name="totrev" id="totrev" required>
+                <div id="totrevInfo" class="info-tooltip">Total revenue generated by the customer</div>
+            </div>
+            <div>
+                <label for="avgrev">Average monthly revenue over the life of the customer
+                    <button type="button" class="info-button" onclick="toggleInfo('avgrev')">ℹ️</button>
+                </label>
+                <input type="number" name="avgrev" id="avgrev" required>
+                <div id="avgrevInfo" class="info-tooltip">Average monthly revenue over the life of the customer</div>
+            </div>
+            <div>
+                <label for="avgmou">Average monthly minutes of use over the life of the customer
+                    <button type="button" class="info-button" onclick="toggleInfo('avgmou')">ℹ️</button>
+                </label>
+                <input type="number" name="avgmou" id="avgmou" required>
+                <div id="avgmouInfo" class="info-tooltip">Average monthly minutes of use over the life of the customer</div>
+            </div>
+            <div>
+                <label for="avgqty">Average monthly number of calls over the life of the customer
+                    <button type="button" class="info-button" onclick="toggleInfo('avgqty')">ℹ️</button>
+                </label>
+                <input type="number" name="avgqty" id="avgqty" required>
+                <div id="avgqtyInfo" class="info-tooltip">Average monthly number of calls over the life of the customer</div>
+            </div>
+            <div>
+                <label for="eqpdays">Number of days (age) of current equipment
+                    <button type="button" class="info-button" onclick="toggleInfo('eqpdays')">ℹ️</button>
+                </label>
+                <input type="number" name="eqpdays" id="eqpdays" required>
+                <div id="eqpdaysInfo" class="info-tooltip">Number of days the current equipment has been used</div>
+            </div>
+            <div>
+                <label for="total_truck">Total vehicles
+                    <button type="button" class="info-button" onclick="toggleInfo('total_truck')">ℹ️</button>
+                </label>
+                <input type="number" name="total_truck" id="total_truck" required>
+                <div id="total_truckInfo" class="info-tooltip">Total number of vehicles in the household</div>
+            </div>
+            <div class="button-container">
+                <button type="button" onclick="showPage(1)">Previous</button>
+                <button type="submit">Submit</button>
+            </div>
+        </div>
+    </form>
+
+    <script>
+        function toggleInfo(id) {
+            const info = document.getElementById(id + "Info");
+            info.classList.toggle("active");
+        }
+
+        function validateAndShowPage(page) {
+            // Validate Page 1
+            const page1 = document.getElementById("page1");
+            const page1Inputs = page1.querySelectorAll("select");
+            let valid = true;
+            page1Inputs.forEach(input => {
+                if (!input.value) {
+                    valid = false;
+                    input.style.borderColor = "red";
+                } else {
+                    input.style.borderColor = "";
+                }
+            });
+
+            if (valid) {
+                showPage(page);
+            }
+        }
+
+        function showPage(page) {
+            const page1 = document.getElementById("page1");
+            const page2 = document.getElementById("page2");
+
+            if (page === 1) {
+                page1.style.display = "grid";
+                page2.style.display = "none";
+            } else {
+                page1.style.display = "none";
+                page2.style.display = "grid";
+            }
+        }
+    </script>
+</body>
+</html>
