@@ -17,14 +17,27 @@ The dataset used in this project contains approximately 100,000 records and 100 
 The model has been deployed using three different frameworks:
 
 - **Streamlit:** [Streamlit App](https://telecom-hmb5wxajocib8bnamx8pra.streamlit.app/)
-- 
-- ![App Screenshot](screenshot/streamlit/1.JPG)
-- 
-- ![App Screenshot](screenshot/streamlit/2.JPG)
--
-- ![App Screenshot](screenshot/streamlit/3.JPG)
--
-- ![App Screenshot](screenshot/streamlit/4.JPG)
+  
+  ![App Screenshot](screenshot/streamlit/1.JPG)
+  
+  ![App Screenshot](screenshot/streamlit/2.JPG)
+
+  ![App Screenshot](screenshot/streamlit/3.JPG)
+
+  ![App Screenshot](screenshot/streamlit/4.JPG)
+  
 - **Flask:** [Flask App](https://telecom-79j7.onrender.com/)
+
+  ![App Screenshot](screenshot/flask/1.JPG)
+  
+  ![App Screenshot](screenshot/flask/2.JPG)
+
+  ![App Screenshot](screenshot/flask/3.JPG)
+  
 - **Django:** [Django App](https://telecom-1-ibrd.onrender.com/)
+  ![App Screenshot](screenshot/django/1.JPG)
+  
+  ![App Screenshot](screenshot/django/2.JPG)
+  
+  ![App Screenshot](screenshot/django/3.JPG)
 
